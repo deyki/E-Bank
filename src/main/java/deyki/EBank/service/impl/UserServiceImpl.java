@@ -1,6 +1,7 @@
 package deyki.EBank.service.impl;
 
 import deyki.EBank.domain.entity.User;
+import deyki.EBank.domain.model.bindingModel.user.NewUsernameModel;
 import deyki.EBank.domain.model.bindingModel.user.UserBindingModel;
 import deyki.EBank.domain.model.responseModel.SignInResponseModel;
 import deyki.EBank.repository.UserRepository;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -75,5 +77,17 @@ public class UserServiceImpl implements UserService {
         final String token = jwtUtil.generateToken(user.getUsername());
 
         return new SignInResponseModel(token);
+    }
+
+    @Override
+    public void changeUsernameById(Long userId, NewUsernameModel newUsernameModel) {
+
+        User user = userRepository
+                .findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("User with id: %d not found!", userId)));
+
+        user.setUsername(newUsernameModel.getUsername());
+
+        userRepository.save(user);
     }
 }
