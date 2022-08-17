@@ -32,4 +32,10 @@ public class BankAccountController {
 
         return ResponseEntity.status(HttpStatus.OK).body(bankAccountService.getBankAccountById(bankAccountId));
     }
+
+    @GetMapping("/getByUsername/{username}")
+    public ResponseEntity<BankAccountResponseModel> getBankAccountByUsername(@PathVariable String username) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(bankAccountService.getBankAccountByUsername(username));
+    }
 }

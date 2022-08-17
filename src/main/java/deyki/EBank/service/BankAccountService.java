@@ -8,4 +8,6 @@ public interface BankAccountService {
     void createBankAccount(Long userId, BankAccountBindingModel bankAccountBindingModel);
 
     BankAccountResponseModel getBankAccountById(Long bankAccountId);
+
+    BankAccountResponseModel getBankAccountByUsername(String username);
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 @Service
 public class BankAccountServiceImpl implements BankAccountService {
@@ -54,10 +55,18 @@ public class BankAccountServiceImpl implements BankAccountService {
     @Override
     public BankAccountResponseModel getBankAccountById(Long bankAccountId) {
 
-        BankAccount bankAccount = bankAccountRepository
+        return bankAccountRepository
                 .findById(bankAccountId)
+                .map(bankAccount -> modelMapper.map(bankAccount, BankAccountResponseModel.class))
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Bank account with id: %d not found!", bankAccountId)));
+    }
 
-        return modelMapper.map(bankAccount, BankAccountResponseModel.class);
+    @Override
+    public BankAccountResponseModel getBankAccountByUsername(String username) {
+
+        return bankAccountRepository
+                .findByUsername(username)
+                .map(bankAccount -> modelMapper.map(bankAccount, BankAccountResponseModel.class))
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Bank account with User: %s not found!", username)));
     }
 }
