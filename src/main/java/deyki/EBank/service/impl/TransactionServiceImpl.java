@@ -7,6 +7,7 @@ import deyki.EBank.domain.enums.TransactionType;
 import deyki.EBank.domain.model.bindingModel.transaction.DepositBindingModel;
 import deyki.EBank.domain.model.bindingModel.transaction.TransferBindingModel;
 import deyki.EBank.domain.model.bindingModel.transaction.WithDrawBindingModel;
+import deyki.EBank.domain.model.responseModel.TransactionResponseModel;
 import deyki.EBank.repository.BankAccountRepository;
 import deyki.EBank.repository.TransactionRepository;
 import deyki.EBank.repository.UserRepository;
@@ -16,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -34,11 +37,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public void deposit(Long userId, DepositBindingModel depositBindingModel) {
-
-        User user = userRepository
-                .findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Invalid userId!"));
+    public void deposit(DepositBindingModel depositBindingModel) {
 
         BankAccount bankAccount = bankAccountRepository
                 .findByIban(depositBindingModel.getIban())
@@ -51,19 +50,15 @@ public class TransactionServiceImpl implements TransactionService {
 
         Transaction transaction = new Transaction();
         transaction.setTransactionType(TransactionType.DEPOSIT);
-        transaction.setSenderUsername(user.getUsername());
-        transaction.setReceiverUsername(user.getUsername());
+        transaction.setSenderUsername(bankAccount.getUser().getUsername());
+        transaction.setReceiverUsername(bankAccount.getUser().getUsername());
         transaction.setAmount(depositBindingModel.getAmount());
 
         transactionRepository.save(transaction);
     }
 
     @Override
-    public void withDraw(Long userId, WithDrawBindingModel withDrawBindingModel) throws Exception {
-
-        User user = userRepository
-                .findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Invalid userId!"));
+    public void withDraw(WithDrawBindingModel withDrawBindingModel) throws Exception {
 
         BankAccount bankAccount = bankAccountRepository
                 .findByIban(withDrawBindingModel.getIban())
@@ -81,8 +76,8 @@ public class TransactionServiceImpl implements TransactionService {
 
         Transaction transaction = new Transaction();
         transaction.setTransactionType(TransactionType.WITHDRAW);
-        transaction.setSenderUsername(user.getUsername());
-        transaction.setReceiverUsername(user.getUsername());
+        transaction.setSenderUsername(bankAccount.getUser().getUsername());
+        transaction.setReceiverUsername(bankAccount.getUser().getUsername());
         transaction.setAmount(withDrawBindingModel.getAmount());
 
         transactionRepository.save(transaction);
@@ -119,5 +114,16 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setAmount(transferBindingModel.getAmount());
 
         transactionRepository.save(transaction);
+    }
+
+    @Override
+    public List<TransactionResponseModel> getTransactionsBySenderUsername(String username) {
+
+        return transactionRepository
+                .findAll()
+                .stream()
+                .filter(transaction -> transaction.getSenderUsername().equals(username))
+                .map(transaction -> modelMapper.map(transaction, TransactionResponseModel.class))
+                .collect(Collectors.toList());
     }
 }
