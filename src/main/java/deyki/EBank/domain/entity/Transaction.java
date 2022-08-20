@@ -1,10 +1,7 @@
 package deyki.EBank.domain.entity;
 
 import deyki.EBank.domain.enums.TransactionType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -13,6 +10,7 @@ import javax.persistence.*;
 @Setter
 @Getter
 @Entity
+@Builder
 @Table(name = "transaction")
 public class Transaction {
 
