@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
@@ -30,6 +31,9 @@ class UserServiceImplTest {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @MockBean
     private JWTUtil jwtUtil;
@@ -49,6 +53,23 @@ class UserServiceImplTest {
         UserDetails testUserDetails = userService.loadUserByUsername(user.getUsername());
 
         assertEquals(testUserDetails.getUsername(), user.getUsername());
+    }
+
+
+    @Test
+    void whenSignUp_thenVerifyCorrectResult() {
+
+        User testUser = new User();
+        testUser.setUserId(9L);
+        testUser.setUsername("Kolio");
+        testUser.setPassword(bCryptPasswordEncoder.encode("randomPassword123"));
+
+        Mockito.when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(testUser));
+        Mockito.when(userRepository.save(testUser)).thenReturn(testUser);
+
+        userService.signUp(modelMapper.map(testUser, UserBindingModel.class));
+
+        assertNotNull(userRepository.findByUsername(testUser.getUsername()));
     }
 
     @Test
@@ -74,4 +95,5 @@ class UserServiceImplTest {
 
         assertEquals(user.getUsername(), "deykioveca");
     }
+
 }
