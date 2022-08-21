@@ -48,15 +48,18 @@ class BankAccountServiceImplTest {
     @Test
     void whenCreateBankAccount_thenVerifyCorrectResult() {
 
+        BankAccount newBankAccount = new BankAccount();
+        newBankAccount.setBankAccountId(66L);
+        newBankAccount.setIban("2233 4444 2111 9912");
+        newBankAccount.setBalance(200.00F);
+
         Mockito.when(userRepository.findById(user.getUserId())).thenReturn(Optional.ofNullable(user));
-        Mockito.when(bankAccountRepository.findByIban(bankAccount.getIban())).thenReturn(Optional.ofNullable(bankAccount));
-        Mockito.when(bankAccountRepository.save(bankAccount)).thenReturn(bankAccount);
+        Mockito.when(bankAccountRepository.findByIban(bankAccount.getIban())).thenReturn(Optional.of(newBankAccount));
+        Mockito.when(bankAccountRepository.save(newBankAccount)).thenReturn(newBankAccount);
 
-        bankAccount.setIban("different iban for the test");
+        bankAccountService.createBankAccount(user.getUserId(), modelMapper.map(newBankAccount, BankAccountBindingModel.class));
 
-        bankAccountService.createBankAccount(user.getUserId(), modelMapper.map(bankAccount, BankAccountBindingModel.class));
-
-        assertEquals(bankAccount.getIban(), "different iban for the test");
+        assertNotNull(bankAccountRepository.findByIban(newBankAccount.getIban()));
     }
 
     @Test
