@@ -1,6 +1,7 @@
 package deyki.EBank.service.impl;
 
 import deyki.EBank.domain.entity.User;
+import deyki.EBank.domain.model.bindingModel.user.NewPasswordModel;
 import deyki.EBank.domain.model.bindingModel.user.NewUsernameModel;
 import deyki.EBank.domain.model.bindingModel.user.UserBindingModel;
 import deyki.EBank.domain.model.responseModel.SignInResponseModel;
@@ -87,6 +88,23 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format("User with id: %d not found!", userId)));
 
         user.setUsername(newUsernameModel.getUsername());
+
+        userRepository.save(user);
+    }
+
+    @Override
+    public void changePasswordById(Long userId, NewPasswordModel newPasswordModel) throws Exception {
+
+        User user = userRepository
+                .findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("User with id: %d not found!", userId)));
+
+        if (user.getPassword().equals(newPasswordModel.getOldPassword())) {
+
+            user.setPassword(bCryptPasswordEncoder.encode(newPasswordModel.getNewPassword()));
+        } else {
+            throw new Exception("Incorrect old password!");
+        }
 
         userRepository.save(user);
     }

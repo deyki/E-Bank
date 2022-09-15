@@ -1,5 +1,6 @@
 package deyki.EBank.controller;
 
+import deyki.EBank.domain.model.bindingModel.user.NewPasswordModel;
 import deyki.EBank.domain.model.bindingModel.user.NewUsernameModel;
 import deyki.EBank.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,5 +31,13 @@ public class UserController {
         userService.changeUsernameById(userId, newUsernameModel);
 
         return ResponseEntity.status(HttpStatus.OK).body("Username changed successfully!");
+    }
+
+    @PutMapping("/changePassword/{userId}")
+    public ResponseEntity<String> changePassword(@PathVariable Long userId, @RequestBody NewPasswordModel newPasswordModel) throws Exception {
+
+        userService.changePasswordById(userId, newPasswordModel);
+
+        return ResponseEntity.status(HttpStatus.OK).body("Password changed successfully!");
     }
 }

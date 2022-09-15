@@ -1,6 +1,7 @@
 package deyki.EBank.service.impl;
 
 import deyki.EBank.domain.entity.User;
+import deyki.EBank.domain.model.bindingModel.user.NewPasswordModel;
 import deyki.EBank.domain.model.bindingModel.user.NewUsernameModel;
 import deyki.EBank.domain.model.bindingModel.user.UserBindingModel;
 import deyki.EBank.domain.model.responseModel.SignInResponseModel;
@@ -96,4 +97,17 @@ class UserServiceImplTest {
         assertEquals(user.getUsername(), "deykioveca");
     }
 
+
+    @Test
+    void whenChangePasswordById_thenVerifyCorrectResult() throws Exception {
+
+        Mockito.when(userRepository.findById(user.getUserId())).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.save(user)).thenReturn(user);
+
+        String newPassword = "newPassword1234";
+
+        userService.changePasswordById(user.getUserId(), new NewPasswordModel(user.getPassword(), newPassword));
+
+        Mockito.verify(userRepository).save(user);
+    }
 }

@@ -1,5 +1,6 @@
 package deyki.EBank.service;
 
+import deyki.EBank.domain.model.bindingModel.user.NewPasswordModel;
 import deyki.EBank.domain.model.bindingModel.user.NewUsernameModel;
 import deyki.EBank.domain.model.bindingModel.user.UserBindingModel;
 import deyki.EBank.domain.model.responseModel.SignInResponseModel;
@@ -12,4 +13,6 @@ public interface UserService extends UserDetailsService {
     SignInResponseModel signIn(UserBindingModel userBindingModel);
 
     void changeUsernameById(Long userId, NewUsernameModel newUsernameModel);
+
+    void changePasswordById(Long userId, NewPasswordModel newPasswordModel) throws Exception;
 }
